@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Quiz Interactivo</title>
+    <style>
+        /* Estilos CSS para que la página se vea bonita */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        #quiz-container {
+            background-color: white;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        #question {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        .option {
+            background-color: #3498db;
+            color: white;
+            padding: 10px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 80%;
+            font-size: 18px;
+        }
+        .option:hover {
+            background-color: #2980b9;
+        }
+        #feedback {
+            font-size: 18px;
+            margin: 20px 0;
+        }
+        #next-btn {
+            background-color: #27ae60;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #next-btn:hover {
+            background-color: #219653;
+        }
+        #result {
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>¡Trivia de Cultura General!</h1>
+    <div id="quiz-container">
+        <div id="question"></div>
+        <div id="options"></div>
+        <div id="feedback"></div>
+        <button id="next-btn" onclick="nextQuestion()">Siguiente Pregunta</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // JavaScript para la lógica del quiz
+        // Lista de preguntas, opciones y respuestas correctas
+        const questions = [
+            {
+                question: "¿Cuál es la capital de Francia?",
+                options: ["París", "Londres", "Berlín", "Madrid"],
+                correct: "París"
+            },
+            {
+                question: "¿Qué planeta es conocido como el planeta rojo?",
+                options: ["Júpiter", "Marte", "Venus", "Mercurio"],
+                correct: "Marte"
+            },
+            {
+                question: "¿Quién pintó la Mona Lisa?",
+                options: ["Van Gogh", "Picasso", "Leonardo da Vinci", "Monet"],
+                correct: "Leonardo da Vinci"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        // Función para mostrar una pregunta
+        function showQuestion() {
+            const questionElement = document.getElementById("question");
+            const optionsElement = document.getElementById("options");
+            const feedbackElement = document.getElementById("feedback");
+            const nextButton = document.getElementById("next-btn");
+
+            // Mostrar la pregunta actual
+            questionElement.innerText = questions[currentQuestionIndex].question;
+
+            // Limpiar opciones anteriores
+            optionsElement.innerHTML = "";
+
+            // Crear botones para cada opción
+            questions[currentQuestionIndex].options.forEach(option => {
+                const button = document.createElement("button");
+                button.innerText = option;
+                button.classList.add("option");
+                button.onclick = () => checkAnswer(option);
+                optionsElement.appendChild(button);
+            });
+
+            // Limpiar feedback y ocultar botón de siguiente
+            feedbackElement.innerText = "";
+            nextButton.style.display = "none";
+        }
+
+        // Función para verificar la respuesta
+        function checkAnswer(selected) {
+            const feedbackElement = document.getElementById("feedback");
+            const nextButton = document.getElementById("next-btn");
+            const correctAnswer = questions[currentQuestionIndex].correct;
+
+            // Deshabilitar botones para evitar múltiples clics
+            document.querySelectorAll(".option").forEach(button => {
+                button.disabled = true;
+                if (button.innerText === correctAnswer) {
+                    button.style.backgroundColor = "#27ae60"; // Verde para la correcta
+                } else if (button.innerText === selected && selected !== correctAnswer) {
+                    button.style.backgroundColor = "#e74c3c"; // Rojo para la incorrecta
+                }
+            });
+
+            // Mostrar feedback y actualizar puntaje
+            if (selected === correctAnswer) {
+                feedbackElement.innerText = "¡Correcto!";
+                score++;
+            } else {
+                feedbackElement.innerText = `Incorrecto. La respuesta correcta es ${correctAnswer}.`;
+            }
+
+            // Mostrar botón de siguiente
+            nextButton.style.display = "block";
+        }
+
+        // Función para pasar a la siguiente pregunta o mostrar resultado
+        function nextQuestion() {
+            currentQuestionIndex++;
+
+            // Si hay más preguntas, mostrar la siguiente
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                // Mostrar resultado final
+                const quizContainer = document.getElementById("quiz-container");
+                quizContainer.innerHTML = quizContainer.innerHTML = `<div id="result">¡Fin del quiz! Tu puntaje: ${score}/${questions.length}</div>`;
+                // Botón para reiniciar
+                const restartButton = document.createElement("button");
+                restartButton.innerText = "Jugar de nuevo";
+                restartButton.id = "next-btn";
+                restartButton.onclick = () => location.reload();
+                quizContainer.appendChild(restartButton);
+            }
+        }
+
+        // Iniciar el quiz
+        showQuestion();
+    </script>
+</body>
+</html>
